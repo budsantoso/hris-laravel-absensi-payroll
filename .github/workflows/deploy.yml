@@ -29,5 +29,5 @@ jobs:
         # optional: protocol: sftp   # bila pakai SFTP, ganti ke sftp://… atau tambahkan protocol
         # optional: port: 21          # default 21 untuk FTP, 22 untuk SFTP
         source: . # folder lokal yang mau di‑upload
-        target: /home/swit1503/public_html/hris.switchcode.id # document root subdomain di cPanel
+        target: public_html/hris.switchcode.id # document root subdomain di cPanel
         delete: true                           # hapus file di cPanel yang tidak ada di source
