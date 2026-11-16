@@ -2,7 +2,7 @@ name: Deploy to cPanel
 
 on:
   push:
-    branches: [ master ]      # atau branch yang sering kamu push
+    branches: [ master ]
 
 jobs:
   deploy:
@@ -13,21 +13,41 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 2️⃣  (Opsional) Install dependensi / build (mis. npm, composer)
-    # - name: Install dependencies
-    #   run: |
-    #     npm ci          # atau composer install
-    #     npm run build   # bila ada build script
+    # 2️⃣  Install dependensi Laravel
+    - name: Install PHP dependencies
+      run: |
+        composer install --no-dev --optimize-autoloader --no-interaction
 
-    # 3️⃣  Deploy ke cPanel lewat FTP/SFTP
+    # 3️⃣  Generate key & cache config
+    - name: Laravel setup
+      run: |
+        cp .env.example .env
+        php artisan key:generate
+        php artisan config:cache
+        php artisan route:cache
+        php artisan view:cache
+
+    # 4️⃣  Deploy ke cPanel lewat FTP/SFTP
     - name: Deploy via FTP
       uses: SamKirkland/FTP-Deploy-Action@master
       with:
-        server: ${{ secrets.CP_HOST }}          # contoh: switchcode.id
-        username: ${{ secrets.CP_USERNAME }}    # username FTP cPanel
-        password: ${{ secrets.CP_PASSWORD }}    # password FTP (masked)
-        # optional: protocol: sftp   # bila pakai SFTP, ganti ke sftp://… atau tambahkan protocol
-        # optional: port: 21          # default 21 untuk FTP, 22 untuk SFTP
-        source: . # folder lokal yang mau di‑upload
-        target: public_html/hris.switchcode.id # document root subdomain di cPanel
-        delete: true                           # hapus file di cPanel yang tidak ada di source
+        server: ${{ secrets.CP_HOST }}
+        username: ${{ secrets.CP_USERNAME }}
+        password: ${{ secrets.CP_PASSWORD }}
+        source: . # upload seluruh project Laravel
+        target: /home/swit1503/public_html/hris.switchcode.id
+        delete: true
+        exclude: |
+          .git*
+          .github*
+          node_modules
+          vendor
+          storage/logs/*
+          storage/framework/cache/*
+          storage/framework/sessions/*
+          storage/framework/views/*
+          .env
+          .env.*
+          *.log
+          phpunit.xml
+          README.md
