@@ -1,34 +1,33 @@
-   name: Deploy to cPanel
+name: Deploy to cPanel
 
-   on:
-     push:
-       branches: [ master ]      # atau branch yang sering kamu push
+on:
+  push:
+    branches: [ master ]      # atau branch yang sering kamu push
 
-   jobs:
-     deploy:
-       runs-on: ubuntu-latest
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-       steps:
-       # 1️⃣  Checkout kode repo
-       - name: Checkout code
-         uses: actions/checkout@v3
+    steps:
+    # 1️⃣  Checkout kode repo
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-       # 2️⃣  (Opsional) Install dependensi / build (mis. npm, composer)
-       # - name: Install dependencies
-       #   run: |
-       #     npm ci          # atau composer install
-       #     npm run build   # bila ada build script
+    # 2️⃣  (Opsional) Install dependensi / build (mis. npm, composer)
+    # - name: Install dependencies
+    #   run: |
+    #     npm ci          # atau composer install
+    #     npm run build   # bila ada build script
 
-       # 3️⃣  Deploy ke cPanel lewat FTP/SFTP
-       - name: Deploy via FTP
-         uses: SamKirkland/FTP-Deploy-Action@master
-         with:
-           server: ${{ secrets.CP_HOST }}          # contoh: switchcode.id
-           username: ${{ secrets.CP_USERNAME }}    # username FTP cPanel
-           password: ${{ secrets.CP_PASSWORD }}    # password FTP (masked)
-           # optional: protocol: sftp   # bila pakai SFTP, ganti ke sftp://… atau tambahkan protocol
-           # optional: port: 21          # default 21 untuk FTP, 22 untuk SFTP
-           source: ./public_html                  # folder lokal yang mau di‑upload
-           target: /home/swit1503/public_html/hris.switchcode.id # document root subdomain di cPanel
-           delete: true                           # hapus file di cPanel yang tidak ada di source
-   
+    # 3️⃣  Deploy ke cPanel lewat FTP/SFTP
+    - name: Deploy via FTP
+      uses: SamKirkland/FTP-Deploy-Action@master
+      with:
+        server: ${{ secrets.CP_HOST }}          # contoh: switchcode.id
+        username: ${{ secrets.CP_USERNAME }}    # username FTP cPanel
+        password: ${{ secrets.CP_PASSWORD }}    # password FTP (masked)
+        # optional: protocol: sftp   # bila pakai SFTP, ganti ke sftp://… atau tambahkan protocol
+        # optional: port: 21          # default 21 untuk FTP, 22 untuk SFTP
+        source: . # folder lokal yang mau di‑upload
+        target: /home/swit1503/public_html/hris.switchcode.id # document root subdomain di cPanel
+        delete: true                           # hapus file di cPanel yang tidak ada di source
